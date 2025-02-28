@@ -20,34 +20,34 @@ pub type NFAError {
 }
 
 pub type NFA {
-  NFA(states: Set(State), alphabet: Set(AlphabetChar), transition_func: fn(State, AlphabetChar) -> Result(State, NFAError), init_state: State, accepting_states: Set(State))
+  NFA(states: Set(State), alphabet: Set(AlphabetChar), transition_func: fn(Set(State), AlphabetChar) -> Set(State), init_state: State, accepting_states: Set(State))
 }
 
 //pub type DFAViolation {
-//  NotAllTransitionsDefined
-//  MultiplePossibleTransitions
+//  NotAllTransitionsDefined(state: State, missing_chars: Set(AlphabetChar))
+//  MultiplePossibleTransitions(state: State, duplicate_chars: Set(AlphabetChar))
 //}
 
-pub fn check_string(automaton: NFA, input: String) -> Bool {
-  let result = input
+pub fn check_string(nfa: NFA, input: String) -> Bool {
+  let final_states = input
   |> string.to_graphemes
-  |> list.try_fold(automaton.init_state, automaton.transition_func)
+  |> list.fold(set.from_list([nfa.init_state]), nfa.transition_func)
 
-  case result {
-    Ok(state) -> set.contains(automaton.accepting_states, state)
-    Error(_) -> False
-  }
+  !set.is_disjoint(nfa.accepting_states, final_states)
 }
 
 pub fn even_a() -> NFA {
   let states = set.from_list([0, 1])
   let alphabet = set.from_list(["a"])
-  let transition_func = fn (state: State, char: AlphabetChar) -> Result(State, NFAError) {
-    case state, char {
-      0, "a" -> Ok(1)
-      1, "a" -> Ok(0)
-      _, _ -> Error(NoTransition)
-    }
+  let transition_func = fn (states, char) {
+    states
+    |> set.fold(set.new(), fn(n_states, state) {
+      case state, char {
+        0, "a" -> set.insert(n_states, 1)
+        1, "a" -> set.insert(n_states, 0)
+        _, _ -> n_states
+      }
+    })
   }
   let init_state = 0
   let accepting_states = set.from_list([0])

@@ -140,7 +140,7 @@ pub fn ends_with_b() -> NFA {
 }
 
 pub fn main() {
-  io.println("Hello from glemt!")
+  io.println("Hello from gflap!")
 
   let automaton = even_a()
   let _ = io.debug(is_dfa(automaton))

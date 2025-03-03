@@ -1,6 +1,8 @@
-# glemt
+# GFLAP
 
-Computational theory automata, work in progress.
+Computational theory automata built with Gleam, work in progress.
+
+Inspired by [JFLAP](https://www.jflap.org/)
 
 ## Development
 
